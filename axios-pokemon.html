@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Axios Pokemon Testing</title>
+
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      text-align: center;
+    }
+
+    div {
+      border: solid black 1px;
+      margin: auto;
+      margin-bottom: 10px;
+      width: 50%
+    }
+
+    h2 {
+      margin: 0;
+      margin-top: 5px;
+    }
+
+    h3 {
+      margin: 0;
+      margin-top: 5px;
+    }
+    
+  </style>
+
+</head>
+
+<body>
+
+  <img src="https://assets.change.org/photos/5/ka/he/QhKAhesgwIcUrSZ-800x450-noPad.jpg?1560307369"
+    alt="Gotta Catch Em All" height="200px"> <br>
+
+</body>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  }
+
+  axios.get("https://pokeapi.co/api/v2/pokemon?limit=50")
+    .then((responce) => {
+      console.log(responce)
+      if (responce.status == 200) {
+        console.log(responce.data.results);
+      }
+
+      // Name
+      let pokeInfo = responce.data.results;
+      for (i = 0; i < pokeInfo.length; i++) {
+        let div = document.createElement('div');
+        div.innerHTML += ` <h2> ${pokeInfo[i].name.capitalize()} </h2>` + "<br>"
+        document.querySelector('body').appendChild(div);
+
+        axios.get(`https://pokeapi.co/api/v2/pokemon/${i+1}`)
+        .then((pokeInfo) => {
+
+          // Sprite
+          let sprites = pokeInfo.data.sprites
+
+          div.innerHTML +=
+            ` <img src ="${sprites.front_default}"/>
+              <img src ="${sprites.back_default}"/>
+              <img src ="${sprites.front_shiny}"/>
+              <img src ="${sprites.back_shiny}"/>` + "<br>"
+
+            
+          // Height
+          div.innerHTML += `<h3>Height:</h3>`
+          div.innerHTML += `${pokeInfo.data.height}\n` + "<br>"
+          document.querySelector('body').appendChild(div);
+
+          // Abilities
+          let abilities = pokeInfo.data.abilities;
+          div.innerHTML += `<h3>Abilities:</h3>`
+          for (let a of abilities) {
+            let ability = a.ability.name;
+            div.innerHTML += `${ability.capitalize()}\n` + "<br> <br>"
+            document.querySelector('body').appendChild(div);
+
+            // Moves 
+            let moves = pokeInfo.data.moves;
+            div.innerHTML += `<h3>Moves:</h3>`
+            for (let a of moves) {
+              let move = a.move.name;
+              div.innerHTML += `${move.capitalize()}\n` + "<br>"
+              document.querySelector('body').appendChild(div);
+            }
+          }
+        })
+      }
+    })
+
+    .catch((error) => {
+      console.log(`I found an error: ${error.essage}`);
+
+    });
+  console.log("Ended script..")
+</script>
+
+</html>
